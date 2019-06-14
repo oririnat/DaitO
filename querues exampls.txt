@@ -1,14 +1,26 @@
-Save symbals :
-אולי כדי להוסיף עוד נתון מאותו סוג סימן פשוט כותים שוב את הפקודה ואז עולה שאלה אם זה נתון שחייב להתקיים או שלא חייב
-= -
-AND - if you want the all terms to be mandatory
-OR  - if 
+Saved symbolsThis :
+= - 
+Must ? — This message will come after any rule entry.
+		 If the user answers 'Y' (yes) then this rule must be in the suspect's profile.
+		 if the user answer 'N' (no) then this rule no must be in the suspect's profile, 
+		 But if it will exist it will be in the head of the profiles list.
 ip - 
-visited_in_site -
+visited_in_site-
 was_activ_at - dd.mm.yyyy@hh:mm
+used_in_app -
+used_in_word -
+os_name
+os_version
+cpu_arch
+cpu_name
+cpu_manu
+gpu_name
+file_sign
+file_name
+file_checksum_md5
+file_checksum_sha256
 
-24.05.2019@12:52
-
+After any of these rules, will come "Must ?" question.
 
 network -
 	ip :
@@ -19,11 +31,81 @@ network -
 	Dns :
 		?
 		
-	sites wanted visited :
-		visited_in_site AND = www.evilsite.com facebook.com/personname www.bankname.co.lk
-		or
-		visited_in_site OR = www.evilsite.com facebook.com/personname www.bankname.co.lk
+	Sites wanted visited :
+		visited_in_site = www.evilsite.com
+		visited_in_site = facebook.com/personname
+		visited_in_site = www.bankname.co.lk
+
+wanted behaviour-
+	Times that the wanted was active in the computer between :
+		was_activ_at = 24.05.2019@12:52 — 24.05.2019@04:45
+	
+	Apps wanted used regularly :
+		used_in_app = safari
+		used_in_app = vim
+		used_in_app = curl
+		used_in_app = itunes 
+		used_in_app = gitbash
+		
+	Word that the wanted wrote :
+		used_in_word = attack cyber 317318 myemail@gmail.com
+		used_in_word = cyber
+		used_in_word = 317318
+		used_in_word = myemail@gmail.com
+
+wanted hardware and software-
+	software -
+		The operating system of wanted :
+			os_name = windows
+			os_name = linux
+		
+		Version of wanted operating system :
+			os_version = 3.1.4
+			os_version = 9
 			
-wanted behavior -
-	times that the wanted was active in the cumputer between :
-		was_activ_at = 24.05.2019@12:52 - 24.05.2019@04:45
+	hardware -
+		The name of the wanted computer cpu architecture :
+			cpu_arch = arm
+			cpu_arch = ice lake
+			
+		The name of the wanted computer cpu
+			cpu_name = i7
+			
+		The name of the wanted computer cpu manufacturer :
+			cpu_manu = intel
+			cpu_manu = amd
+			cpu_manu = nvidia
+		
+		The name of the wanted computer gpu :
+			gpu_name = Nvidia Titan X
+			gpu_name = AMD Radeon HD
+				
+File forensics -
+	The wanted have a file with a file signatures :
+		file_sign = xxxxxxxxx
+	
+	The wanted have a file named :
+		file_name = test.txt
+		file_name = virus.sh
+		
+	The wanted have a file with a md5 file checksum :
+		file_checksum_md5 = 7ED0097D7E9EE73CF0952A1F0A07C07E
+		
+	The wanted have a file with a sha256 file checksum :
+		file_checksum_sha256 = 8D74BEEC1BE996322AD76813BAFB92D40839895D6DD7EE808B17CA201EAC98BE
+		
+	Forensics of a image file (may be virtual machine) 
+		/////////
+		
+[] sing means - list of ...
+	
+Full profile :
+	network :
+		ip
+		[dns requests]
+		[sites wanted visited]
+	behaviour :
+		[wanted active time]
+		
+	
+		
