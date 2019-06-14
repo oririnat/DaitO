@@ -1,0 +1,29 @@
+Save symbals :
+אולי כדי להוסיף עוד נתון מאותו סוג סימן פשוט כותים שוב את הפקודה ואז עולה שאלה אם זה נתון שחייב להתקיים או שלא חייב
+= -
+AND - if you want the all terms to be mandatory
+OR  - if 
+ip - 
+visited_in_site -
+was_activ_at - dd.mm.yyyy@hh:mm
+
+24.05.2019@12:52
+
+
+network -
+	ip :
+		ip = "301.x.x.2"
+		or
+		ip = "x.x.x.142"
+		
+	Dns :
+		?
+		
+	sites wanted visited :
+		visited_in_site AND = www.evilsite.com facebook.com/personname www.bankname.co.lk
+		or
+		visited_in_site OR = www.evilsite.com facebook.com/personname www.bankname.co.lk
+			
+wanted behavior -
+	times that the wanted was active in the cumputer between :
+		was_activ_at = 24.05.2019@12:52 - 24.05.2019@04:45
