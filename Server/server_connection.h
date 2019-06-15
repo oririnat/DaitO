@@ -33,6 +33,8 @@
 
 struct sockaddr_in address;
 
+
+
 //typedef enum {
 //	LOG_IN,
 //	REGISTER,

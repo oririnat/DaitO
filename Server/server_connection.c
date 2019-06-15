@@ -37,11 +37,11 @@ void initialize_connection(){
 	addrlen = sizeof(address);
 		
 }
-void add_child_sockets_to_set(client_ptr * client_list){
-	client_ptr curr_client = *client_list;
-	while(curr_client){
+void add_child_sockets_to_set(client_ptr * clntppClientList){
+	client_ptr clntpCurrClient = *clntppClientList;
+	while(clntpCurrClient){
 		//socket descriptor 
-		socket_descriptor = curr_client->socket_fd;
+		socket_descriptor = clntpCurrClient->fdSocket;
 	
 		//if valid socket descriptor then add to read list 
 		if(socket_descriptor > 0)
@@ -51,6 +51,6 @@ void add_child_sockets_to_set(client_ptr * client_list){
 		if(socket_descriptor > max_socket_descriptor) 
 			max_socket_descriptor = socket_descriptor; 
 		
-		curr_client = curr_client->next_client;
+		clntpCurrClient = clntpCurrClient->clntNextClient;
 	}
 }

