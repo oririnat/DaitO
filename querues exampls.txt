@@ -1,5 +1,7 @@
 intelligence gathering
 
+https://github.com/pentesteracademy/linux-rootkits-red-blue-teams
+
 Saved symbolsThis :
 = - 
 Must ? — This message will come after any rule entry.
