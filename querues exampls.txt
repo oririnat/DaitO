@@ -1,3 +1,5 @@
+intelligence gathering
+
 Saved symbolsThis :
 = - 
 Must ? — This message will come after any rule entry.
@@ -9,16 +11,16 @@ visited_in_site-
 was_activ_at - dd.mm.yyyy@hh:mm
 used_in_app -
 used_in_word -
-os_name
-os_version
-cpu_arch
-cpu_name
-cpu_manu
-gpu_name
-file_sign
-file_name
-file_checksum_md5
-file_checksum_sha256
+os_name - 
+os_version - 
+cpu_arch - 
+cpu_name -
+cpu_manu - 
+gpu_name - 
+file_sign -
+file_name - 
+file_checksum_md5 - 
+file_checksum_sha256 -
 
 After any of these rules, will come "Must ?" question.
 
